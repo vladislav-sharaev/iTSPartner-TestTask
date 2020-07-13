@@ -1,0 +1,24 @@
+/*
+  Localizable.strings
+  TestTask-ParsingJSON
+
+  Created by Vladimir Sharaev on 13.07.2020.
+  Copyright © 2020 Vladislav Sharaev. All rights reserved.
+*/
+//MARK: MainViewController
+
+"tableBtn_text" = "Table";
+"collectionBtn_text" = "Collection";
+"segment0_text" = "👨 All 👩";
+"segment1_text" = "Male 👨";
+"segment2_text" = "Female 👩";
+"age_text" = "y.o.";
+
+
+//MARK: MoreInformationViewController
+
+"eyeColor_text" = "Eye color:";
+"age2_text" = "Age:";
+"favoriteFruit_text" = "Favorite fruit:";
+"balance_text" = "Balance:";
+"guID_text" = "guID:";
