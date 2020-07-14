@@ -24,3 +24,4 @@
 "favoriteFruit_text" = "Любимый фрукт:";
 "balance_text" = "Баланс:";
 "guID_text" = "guID:";
+"id" = "ID: ";

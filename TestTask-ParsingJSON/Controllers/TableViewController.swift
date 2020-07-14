@@ -28,12 +28,14 @@ class TableViewController: UIViewController {
 
 extension TableViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("COUNT HERE IS:", humanArray.count)
         return humanArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TableViewCell") as! TableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: R.reuseIdentifier.tableViewCell, for: indexPath) else {
+            let cell = UITableViewCell()
+            return cell
+        }
         
         cell.indexPath = indexPath
         cell.nameLabel.text = humanArray[indexPath.row].name
@@ -53,18 +55,24 @@ extension TableViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         if let url = URL(string: (humanArray[indexPath.row].picture)!) {
-            UrlLoaderManager.shared.downloadImage(url: url) { (data) in
-                let image = UIImage(data: data)
-                guard indexPath == cell.indexPath else { return }
-                DispatchQueue.main.async {
-                    cell.photoImageView.image = image
+            UrlLoaderManager.shared.downloadImage(url: url) { (result) in
+                switch result {
+                case .success(let data):
+                    let image = UIImage(data: data)
+                    guard indexPath == cell.indexPath else { return }
+                    DispatchQueue.main.async {
+                        cell.photoImageView.image = image
+                    }
+                case .failure(let error):
+                    print("Cant load human image in TableViewController")
+                    print(error)
                 }
             }
         } else {
-            cell.photoImageView.image = UIImage(named: "defaultImage")
+            cell.photoImageView.image = R.image.defaultImage()
         }
         
-        cell.ageLabel.text = String(humanArray[indexPath.row].age ?? 00) + " " + "age_text".localized()
+        cell.ageLabel.text = String(humanArray[indexPath.row].age ?? 00) + " " + R.string.localizable.age_text()
         return cell
     }
     
@@ -73,11 +81,11 @@ extension TableViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MoreInformationViewController") as! MoreInformationViewController
-        
+        guard let vc = R.storyboard.main.moreInformationViewController() else { return }
         vc.indexPath = indexPath
         vc.human = humanArray[indexPath.row]
         self.navigationController?.pushViewController(vc, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
 
     }
 }

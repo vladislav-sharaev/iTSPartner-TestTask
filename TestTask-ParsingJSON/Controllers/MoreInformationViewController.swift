@@ -57,14 +57,20 @@ class MoreInformationViewController: UIViewController {
             }
             
             if let url = URL(string: (person.picture)!) {
-                UrlLoaderManager.shared.downloadImage(url: url) { (data) in
-                    let image = UIImage(data: data)
-                    DispatchQueue.main.async {
-                        self.pictureImageView.image = image
+                UrlLoaderManager.shared.downloadImage(url: url) { (result) in
+                    switch result {
+                    case .success(let data):
+                        let image = UIImage(data: data)
+                        DispatchQueue.main.async {
+                            self.pictureImageView.image = image
+                        }
+                    case .failure(let error):
+                        print("Cant load human image in MoreInformationViewController")
+                        print(error)
                     }
                 }
             } else {
-                pictureImageView.image = UIImage(named: "defaultImage")
+                pictureImageView.image = R.image.defaultImage()
             }
             
             age.text = String(person.age ?? 00)
@@ -72,7 +78,8 @@ class MoreInformationViewController: UIViewController {
             favoriteFruit.text = person.favoriteFruit
             eyeColor.text = person.eyeColor
             guID.text = person.guid
-            navigationItem.title = person._id
+            guard let id = person._id else { return }
+            navigationItem.title = R.string.localizable.id() + id
         }
     }
 

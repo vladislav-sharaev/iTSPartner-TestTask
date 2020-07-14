@@ -9,21 +9,24 @@
 import Foundation
 
 class JSONParser {
-    func parseJson(jsonUrlString: String, completion: @escaping(([Human]) -> Void)) {
-        guard let url = URL(string: jsonUrlString) else { return }
-        
+    func parseJson(jsonUrlString: String, completion: @escaping((Result<[Human], NetworkError>) -> Void)) {
+        guard let url = URL(string: jsonUrlString) else {
+            completion(.failure(.badURL))
+            return
+        }
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             guard let data = data else {
-                print("Error data")
+                print("Error data: ", error.debugDescription)
+                completion(.failure(.requestFailed))
                 return
             }
-            
             do {
                 let humans = try JSONDecoder().decode([Human].self, from: data)
-                completion(humans)
+                completion(.success(humans))
                 
             } catch let jsonError {
                 print("Eror with json:", jsonError)
+                completion(.failure(.unknown))
             }
         }.resume()
     }

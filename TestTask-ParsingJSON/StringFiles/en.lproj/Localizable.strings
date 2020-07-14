@@ -22,3 +22,4 @@
 "favoriteFruit_text" = "Favorite fruit:";
 "balance_text" = "Balance:";
 "guID_text" = "guID:";
+"id" = "ID: ";

@@ -1,0 +1,13 @@
+//
+//  NetworkError.swift
+//  TestTask-ParsingJSON
+//
+//  Created by Vladimir Sharaev on 14.07.2020.
+//  Copyright © 2020 Vladislav Sharaev. All rights reserved.
+//
+
+import Foundation
+
+enum NetworkError: Error {
+    case badURL, requestFailed, unknown
+}

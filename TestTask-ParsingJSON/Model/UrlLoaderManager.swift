@@ -14,22 +14,20 @@ class UrlLoaderManager {
     lazy var configuration: URLSessionConfiguration = URLSessionConfiguration.default
     lazy var session: URLSession = URLSession(configuration: self.configuration)
     
-    func downloadImage(url: URL, completion: @escaping((Data) -> Void)) {
+    func downloadImage(url: URL, completion: @escaping((Result<Data, NetworkError>) -> Void)) {
         let request = URLRequest(url: url)
         let dataTask = session.dataTask(with: request) { (data, response, error) in
             if error == nil {
-                if let httpResponse = response as? HTTPURLResponse {
-                    switch (httpResponse.statusCode) {
-                    case 200:
-                        if let data = data {
-                            completion(data)
-                        }
-                    default:
-                            print(httpResponse.statusCode)
+                if (response as? HTTPURLResponse) != nil {
+                    if let data = data {
+                        completion(.success(data))
+                    } else {
+                        completion(.failure(.requestFailed))
                     }
                 }
             } else {
                 print("Error donwload data \(error!.localizedDescription)")
+                completion(.failure(.unknown))
             }
         }
         dataTask.resume()

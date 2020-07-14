@@ -26,29 +26,36 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        activityIndicator.transform = CGAffineTransform.init(scaleX: 2, y: 2)
         configLocalization()
         configUIElements(isLoaded: false)
+        let jsonParser = JSONParser()
+        jsonParser.parseJson(jsonUrlString: Constants.jsonUrlString) { (result) in
+            switch result {
+            case .success(let humans):
+                self.usableArray = humans
+                self.humanArray = humans
+                print(self.usableArray.count)
+                self.getChildVC(childType: self.childType)
+                self.configUIElements(isLoaded: true)
+            case .failure(let error):
+                print("Can't parse JSON in MainVC")
+                print(error)
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let jsonParser = JSONParser()
-        jsonParser.parseJson(jsonUrlString: Constants.jsonUrlString) { (humans) in
-            self.usableArray = humans
-            self.humanArray = humans
-            print(self.usableArray.count)
-            self.getChildVC(childType: self.childType)
-            self.configUIElements(isLoaded: true)
-        }
     }
     
     func configLocalization() {
-        tableBtn.title = "tableBtn_text".localized()
-        collectionBtn.title = "collectionBtn_text".localized()
-        filterSegmentedCntrl.setTitle("segment0_text".localized(), forSegmentAt: 0)
-        filterSegmentedCntrl.setTitle("segment1_text".localized(), forSegmentAt: 1)
-        filterSegmentedCntrl.setTitle("segment2_text".localized(), forSegmentAt: 2)
+        tableBtn.title = R.string.localizable.tableBtn_text()
+        collectionBtn.title = R.string.localizable.collectionBtn_text()
+        filterSegmentedCntrl.setTitle(R.string.localizable.segment0_text(),forSegmentAt: 0)
+        filterSegmentedCntrl.setTitle(R.string.localizable.segment1_text(),forSegmentAt: 1)
+        filterSegmentedCntrl.setTitle(R.string.localizable.segment2_text(),forSegmentAt: 2)
     }
     
     func configUIElements(isLoaded: Bool) {
@@ -74,14 +81,14 @@ class MainViewController: UIViewController {
         switch childType {
         case .table:
             DispatchQueue.main.async {
-                let vc = self.storyboard?.instantiateViewController(identifier: "TableViewController") as! TableViewController
+                guard let vc = R.storyboard.main.tableViewController() else { return }
                 self.changeVC(vc: vc)
                 vc.humanArray = self.usableArray
                 vc.tableView.reloadData()
             }
         case .collection:
             DispatchQueue.main.async {
-                let vc = self.storyboard?.instantiateViewController(identifier: "CollectionViewController") as! CollectionViewController
+                guard let vc = R.storyboard.main.collectionViewController() else { return }
                 self.changeVC(vc: vc)
                 vc.humanArray = self.usableArray
                 vc.collectionView.reloadData()
@@ -108,17 +115,22 @@ class MainViewController: UIViewController {
         collectionBtn.tintColor = .blue
         tableBtn.tintColor = .black
         configUIElements(isLoaded: false)
-        childType = .table
         filterSegmentedCntrl.selectedSegmentIndex = 0
         sorted = false
         sortBtn.image = UIImage(systemName: "arrow.up.arrow.down")
         let jsonParser = JSONParser()
-        jsonParser.parseJson(jsonUrlString: Constants.jsonUrlString) { (humans) in
-            self.usableArray = humans
-            self.humanArray = humans
-            print(self.usableArray.count)
-            self.getChildVC(childType: self.childType)
-            self.configUIElements(isLoaded: true)
+        jsonParser.parseJson(jsonUrlString: Constants.jsonUrlString) { (result) in
+            switch result {
+            case .success(let humans):
+                self.usableArray = humans
+                self.humanArray = humans
+                print(self.usableArray.count)
+                self.getChildVC(childType: self.childType)
+                self.configUIElements(isLoaded: true)
+            case .failure(let error):
+                print("Can't parse JSON in MainVC")
+                print(error)
+            }
         }
     }
     @IBAction func tableBtnAction(_ sender: UIBarButtonItem) {

@@ -11,6 +11,9 @@ import UIKit
 class CollectionViewController: UIViewController {
 
     var humanArray = [Human]()
+    let cellsCountInARow = 2
+    let offSet: CGFloat = 8.0
+    let collectionCellID = "CollectionViewCell"
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -23,7 +26,7 @@ class CollectionViewController: UIViewController {
     func configCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.register(UINib(nibName: "CollectionViewCell", bundle: nil), forCellWithReuseIdentifier: Constants.collectionCellID)
+        collectionView.register(R.nib.collectionViewCell)
     }
 }
 
@@ -34,7 +37,10 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.collectionCellID, for: indexPath) as! CollectionViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: R.reuseIdentifier.collectionViewCell, for: indexPath) else {
+            let cell = UICollectionViewCell()
+            return cell
+        }
         
         cell.indexPath = indexPath
         cell.nameLabel.text = humanArray[indexPath.row].name
@@ -54,18 +60,24 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
         }
         
         if let url = URL(string: (humanArray[indexPath.row].picture)!) {
-            UrlLoaderManager.shared.downloadImage(url: url) { (data) in
-                let image = UIImage(data: data)
-                guard indexPath == cell.indexPath else { return }
-                DispatchQueue.main.async {
-                    cell.photoImageView.image = image
+            UrlLoaderManager.shared.downloadImage(url: url) { (result) in
+                switch result {
+                case .success(let data):
+                    let image = UIImage(data: data)
+                    guard indexPath == cell.indexPath else { return }
+                    DispatchQueue.main.async {
+                        cell.photoImageView.image = image
+                    }
+                case .failure(let error):
+                    print("Cant load human image in CollectionViewController")
+                    print(error)
                 }
             }
         } else {
-            cell.photoImageView.image = UIImage(named: "defaultImage")
+            cell.photoImageView.image = R.image.defaultImage()
         }
         
-        cell.ageLabel.text = String(humanArray[indexPath.row].age ?? 00) + " " + "age_text".localized()
+        cell.ageLabel.text = String(humanArray[indexPath.row].age ?? 00) + " " + R.string.localizable.age_text()
         return cell
         
     }
@@ -73,16 +85,16 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         let frameVC = collectionView.frame
-        let widthCell = frameVC.width / CGFloat(Constants.cellsCountInARow)
-        let heightCell = widthCell / 3.5
-        let spacing = CGFloat(Constants.cellsCountInARow + 1) * CGFloat(Constants.offSet) / CGFloat(Constants.cellsCountInARow)
+        let widthCell = frameVC.width / CGFloat(cellsCountInARow)
+        let heightCell = widthCell 
+        let spacing = CGFloat(cellsCountInARow + 1) * offSet / CGFloat(cellsCountInARow)
         
-        return CGSize(width: widthCell - spacing, height: heightCell - (CGFloat(Constants.cellsCountInARow) * CGFloat(Constants.offSet)))
+        return CGSize(width: widthCell - spacing, height: heightCell - (CGFloat(cellsCountInARow) * offSet))
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        let vc = storyboard?.instantiateViewController(identifier: "MoreInformationViewController") as! MoreInformationViewController
+        guard let vc = R.storyboard.main.moreInformationViewController() else { return } 
         vc.indexPath = indexPath
         vc.human = humanArray[indexPath.row]
         self.navigationController?.pushViewController(vc, animated: true)
