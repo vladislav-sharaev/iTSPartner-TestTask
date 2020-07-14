@@ -9,7 +9,6 @@
 import Foundation
 
 class UrlLoaderManager {
-    
     static var shared = UrlLoaderManager()
     lazy var configuration: URLSessionConfiguration = URLSessionConfiguration.default
     lazy var session: URLSession = URLSession(configuration: self.configuration)
@@ -31,6 +30,5 @@ class UrlLoaderManager {
             }
         }
         dataTask.resume()
-        
     }
 }

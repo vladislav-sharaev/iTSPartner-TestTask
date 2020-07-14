@@ -9,7 +9,6 @@
 import UIKit
 
 class CollectionViewController: UIViewController {
-
     var humanArray = [Human]()
     let cellsCountInARow = 2
     let offSet: CGFloat = 8.0
@@ -20,7 +19,6 @@ class CollectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configCollectionView()
-
     }
     
     func configCollectionView() {
@@ -36,7 +34,6 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: R.reuseIdentifier.collectionViewCell, for: indexPath) else {
             let cell = UICollectionViewCell()
             return cell
@@ -83,7 +80,6 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
         let frameVC = collectionView.frame
         let widthCell = frameVC.width / CGFloat(cellsCountInARow)
         let heightCell = widthCell 
@@ -93,9 +89,7 @@ extension CollectionViewController: UICollectionViewDataSource, UICollectionView
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
         guard let vc = R.storyboard.main.moreInformationViewController() else { return } 
-        vc.indexPath = indexPath
         vc.human = humanArray[indexPath.row]
         self.navigationController?.pushViewController(vc, animated: true)
     }

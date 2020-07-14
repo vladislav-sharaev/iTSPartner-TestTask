@@ -9,7 +9,6 @@
 import UIKit
 
 class CollectionViewCell: UICollectionViewCell {
-    
     var indexPath: IndexPath?
     
     @IBOutlet weak var photoImageView: UIImageView!
@@ -20,5 +19,4 @@ class CollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
-
 }

@@ -11,3 +11,4 @@ import Foundation
 enum NetworkError: Error {
     case badURL, requestFailed, unknown
 }
+

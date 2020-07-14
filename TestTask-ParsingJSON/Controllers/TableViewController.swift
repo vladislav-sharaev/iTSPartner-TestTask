@@ -9,7 +9,6 @@
 import UIKit
 
 class TableViewController: UIViewController {
-
     var humanArray = [Human]()
     
     @IBOutlet weak var tableView: UITableView!
@@ -82,10 +81,8 @@ extension TableViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let vc = R.storyboard.main.moreInformationViewController() else { return }
-        vc.indexPath = indexPath
         vc.human = humanArray[indexPath.row]
         self.navigationController?.pushViewController(vc, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
-
     }
 }

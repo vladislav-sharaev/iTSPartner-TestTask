@@ -13,7 +13,8 @@
 "segment1_text" = "Male 👨";
 "segment2_text" = "Female 👩";
 "age_text" = "y.o.";
-
+"alert" = "Something went wrong";
+"alert_btn" = "Refresh";
 
 //MARK: MoreInformationViewController
 

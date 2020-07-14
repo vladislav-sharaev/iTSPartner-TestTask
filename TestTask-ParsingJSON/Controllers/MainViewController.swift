@@ -9,7 +9,6 @@
 import UIKit
 
 class MainViewController: UIViewController {
-    
     var gender = Gender.unknown
     var usableArray = [Human]()
     var humanArray = [Human]()
@@ -26,28 +25,13 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        activityIndicator.transform = CGAffineTransform.init(scaleX: 2, y: 2)
-        configLocalization()
-        configUIElements(isLoaded: false)
-        let jsonParser = JSONParser()
-        jsonParser.parseJson(jsonUrlString: Constants.jsonUrlString) { (result) in
-            switch result {
-            case .success(let humans):
-                self.usableArray = humans
-                self.humanArray = humans
-                print(self.usableArray.count)
-                self.getChildVC(childType: self.childType)
-                self.configUIElements(isLoaded: true)
-            case .failure(let error):
-                print("Can't parse JSON in MainVC")
-                print(error)
-            }
-        }
+        config()
+        loadFromNetwork()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
+    func config() {
+        activityIndicator.transform = CGAffineTransform.init(scaleX: 2, y: 2)
+        configLocalization()
     }
     
     func configLocalization() {
@@ -70,7 +54,42 @@ class MainViewController: UIViewController {
         }
     }
     
+    func loadFromNetwork() {
+        let networkLoader = NetworkLoader()
+        networkLoader.parseJson(jsonUrlString: Constants.jsonUrlString) { (result) in
+            switch result {
+            case .success(let humans):
+                self.usableArray = humans
+                self.humanArray = humans
+                self.getChildVC(childType: self.childType)
+                self.configUIElements(isLoaded: true)
+                
+            case .failure(let error):
+                print("Can't parse JSON in MainVC")
+                print(error)
+                DispatchQueue.main.async {
+                    self.showAlertWithAction()
+                }
+            }
+        }
+    }
+    
+    func clear() {
+        for view in viewForChild.subviews {
+            view.removeFromSuperview()
+        }
+        if self.children.count > 0 {
+            let VCs = self.children
+            for vc in VCs {
+                vc.willMove(toParent: nil)
+                vc.view.removeFromSuperview()
+                vc.removeFromParent()
+            }
+        }
+    }
+    
     func changeVC(vc: UIViewController) {
+        clear()
         vc.view.frame = viewForChild.bounds
         self.addChild(vc)
         viewForChild.addSubview(vc.view)
@@ -96,6 +115,16 @@ class MainViewController: UIViewController {
         }
     }
     
+    func showAlertWithAction() {
+        let alert = UIAlertController(title: R.string
+        .localizable.alert(), message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: R.string
+            .localizable.alert_btn(), style: .cancel, handler: { (alert) in
+                self.loadFromNetwork()
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     @IBAction func sortBtnAction(_ sender: UIBarButtonItem) {
         let sorter = SortManager()
         if sorted == false {
@@ -103,7 +132,7 @@ class MainViewController: UIViewController {
             usableArray = sorter.sortByIncrease(array: usableArray)
             getChildVC(childType: childType)
             sorted = true
-        } else if sorted == true {
+        } else {
             sender.image = UIImage(systemName: "arrow.down")
             usableArray = sorter.sortByDecrease(array: usableArray)
             getChildVC(childType: childType)
@@ -112,39 +141,27 @@ class MainViewController: UIViewController {
     }
     
     @IBAction func refreshBtnAction(_ sender: UIBarButtonItem) {
-        collectionBtn.tintColor = .blue
-        tableBtn.tintColor = .black
         configUIElements(isLoaded: false)
         filterSegmentedCntrl.selectedSegmentIndex = 0
         sorted = false
         sortBtn.image = UIImage(systemName: "arrow.up.arrow.down")
-        let jsonParser = JSONParser()
-        jsonParser.parseJson(jsonUrlString: Constants.jsonUrlString) { (result) in
-            switch result {
-            case .success(let humans):
-                self.usableArray = humans
-                self.humanArray = humans
-                print(self.usableArray.count)
-                self.getChildVC(childType: self.childType)
-                self.configUIElements(isLoaded: true)
-            case .failure(let error):
-                print("Can't parse JSON in MainVC")
-                print(error)
-            }
-        }
+        loadFromNetwork()
     }
+    
     @IBAction func tableBtnAction(_ sender: UIBarButtonItem) {
         collectionBtn.tintColor = .blue
         tableBtn.tintColor = .black
         childType = .table
         getChildVC(childType: childType)
     }
+    
     @IBAction func collectionBtnAction(_ sender: UIBarButtonItem) {
         collectionBtn.tintColor = .black
         tableBtn.tintColor = .blue
         childType = .collection
         getChildVC(childType: childType)
     }
+    
     @IBAction func filterSegmentedControlAction(_ sender: UISegmentedControl) {
         sorted = false
         sortBtn.image = UIImage(systemName: "arrow.up.arrow.down")
@@ -157,11 +174,10 @@ class MainViewController: UIViewController {
             gender = .male
             usableArray = sorter.sortByGender(gender: gender, array: humanArray)
             getChildVC(childType: childType)
-        } else if sender.selectedSegmentIndex == 2 {
+        } else {
             gender = .female
             usableArray = sorter.sortByGender(gender: gender, array: humanArray)
             getChildVC(childType: childType)
         }
     }
-    
 }

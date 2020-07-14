@@ -9,7 +9,6 @@
 import Foundation
 
 class SortManager {
-    
     func sortByDecrease(array: [Human]) -> [Human] {
         let sortedArray = array.sorted(by: { $0.age ?? 0 > $1.age ?? 0 })
         return sortedArray

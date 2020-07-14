@@ -9,8 +9,6 @@
 import UIKit
 
 class MoreInformationViewController: UIViewController {
-    
-    var indexPath: IndexPath?
     var human: Human?
     
     @IBOutlet weak var pictureImageView: UIImageView!
@@ -21,7 +19,6 @@ class MoreInformationViewController: UIViewController {
     @IBOutlet weak var favoriteFruit: UILabel!
     @IBOutlet weak var balance: UILabel!
     @IBOutlet weak var guID: UILabel!
-    
     
     @IBOutlet weak var eyeColorLabel: UILabel!
     @IBOutlet weak var ageLabel: UILabel!
@@ -38,7 +35,6 @@ class MoreInformationViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         if let person = human {
             nameLabel.text = person.name
             
@@ -84,10 +80,10 @@ class MoreInformationViewController: UIViewController {
     }
 
     func configLocalization() {
-        eyeColorLabel.text = "eyeColor_text".localized()
-        ageLabel.text = "age2_text".localized()
-        favoriteFruitLabel.text = "favoriteFruit_text".localized()
-        balanceLabel.text = "balance_text".localized()
-        guIDLable.text = "guID_text".localized()
+        eyeColorLabel.text = R.string.localizable.eyeColor_text()
+        ageLabel.text = R.string.localizable.age2_text()
+        favoriteFruitLabel.text = R.string.localizable.favoriteFruit_text()
+        balanceLabel.text = R.string.localizable.balance_text()
+        guIDLable.text = R.string.localizable.guID_text()
     }
 }

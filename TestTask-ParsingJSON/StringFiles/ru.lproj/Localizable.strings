@@ -15,6 +15,8 @@
 "segment1_text" = "Мужчины 👨";
 "segment2_text" = "Женщины 👩";
 "age_text" = "лет";
+"alert" = "Что-то пошло не так";
+"alert_btn" = "Повторить попытку";
 
 
 //MARK: MoreInformationViewController

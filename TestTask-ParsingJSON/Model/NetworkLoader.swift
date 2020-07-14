@@ -8,7 +8,7 @@
 
 import Foundation
 
-class JSONParser {
+class NetworkLoader {
     func parseJson(jsonUrlString: String, completion: @escaping((Result<[Human], NetworkError>) -> Void)) {
         guard let url = URL(string: jsonUrlString) else {
             completion(.failure(.badURL))
